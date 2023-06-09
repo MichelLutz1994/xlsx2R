@@ -1,0 +1,52 @@
+library(pacman)
+pacman::p_load(tidyverse, xlsx, foreign, readr)
+
+# file -> full path to .xlsx file
+# tablename = libname.tabelname
+xlsx2sas <- function(file, sheet=NULL, table_name){
+  
+  setwd(dirname(file))
+  
+  #import xlsx file
+  if (is.null(sheet)){
+    data <- read.xlsx2(file=file, sheetIndex = 1)
+  } else {
+    data <- read.xlsx2(file=file, sheetName = sheet)
+  }
+  
+  
+  # Function defined for converting factors and blanks
+  convert_format_r2sas <- function(data){
+    data <- data %>%
+      dplyr::mutate_if(is.factor, as.character) %>%
+      dplyr::mutate_if(is.character, tidyr::replace_na, replace = "")
+    return(data)
+  }
+  
+  # Convert some formatting
+  data <- convert_format_r2sas(data)
+  
+  # Ensure the data and code files are saved in an easily accessible location 
+  #(ideally in or downstream of your R project directory)
+  write.foreign(df = data ,
+                datafile = paste(dirname(file), 'data_temp.txt', sep="/"),
+                codefile = 'data_temp.sas',
+                dataname = table_name, # Destination in SAS to save the data
+                package = 'SAS')
+  
+  # modify sas program, set and reset working directory and change root to sce
+  path=paste(dirname(file), 'data_temp.sas', sep="/")
+  begin_txt <- "data _null_;\n\trc=dlgcdir(\"/\");\n\tput rc=;\nrun;\n"
+  end_txt <- "\ndata _null_;\n\trc=dlgcdir(\"/apps/sas/studioconfig\");\n\tput rc=;\nrun;"
+  tx <- read_file(path)
+  tx  <- gsub(pattern = "\"X:", replace = "\"data", x = tx)
+  tx <- paste(begin_txt, tx, end_txt, sep="\n")
+  write_file(tx, path)
+}
+
+xlsx2sas(file="X:/projects/sandbox/sandbox_1/05-Prog-Env/mlutz/ae.xlsx",
+         sheet=NULL,
+         table_name="work.ae")
+
+
+
