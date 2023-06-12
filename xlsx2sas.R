@@ -1,8 +1,9 @@
+#!/usr/bin/env Rscript
 library(pacman)
-pacman::p_load(tidyverse, xlsx, foreign, readr)
+pacman::p_load(tidyverse, haven, xlsx, foreign, readr, fs)
 
-# file -> full path to .xlsx file
-# tablename = libname.tabelname
+# function reads xlsx file
+# writes the file as data_temp.csv file and sas code to import the file in sas
 xlsx2sas <- function(file, sheet=NULL, table_name){
   
   setwd(dirname(file))
@@ -14,7 +15,7 @@ xlsx2sas <- function(file, sheet=NULL, table_name){
     data <- read.xlsx2(file=file, sheetName = sheet)
   }
   
-  
+  print(paste("imported :", file, sep=""))
   # Function defined for converting factors and blanks
   convert_format_r2sas <- function(data){
     data <- data %>%
@@ -44,9 +45,21 @@ xlsx2sas <- function(file, sheet=NULL, table_name){
   write_file(tx, path)
 }
 
-xlsx2sas(file="X:/projects/sandbox/sandbox_1/05-Prog-Env/mlutz/ae.xlsx",
+# parsing command line arguments
+args = commandArgs(trailingOnly=TRUE)
+if (length(args) < 2 || length(args) > 3) {
+  stop("Provide 2 or 3 arguments. First path to .xlsx file. Second destination libname.tablename. 
+       Third sheet name, if none given the 1 sheet will be imported", call.=FALSE)
+} else if (length(args) >= 2){
+  file <- args[1]
+  table_name <- args[2]
+  sheet <- NULL
+} else if (length(args) == 3){
+  sheet <- args[3]
+}
+
+print("Start table transfere...")
+xlsx2sas(file=file,
          sheet=NULL,
-         table_name="work.ae")
-
-
-
+         table_name=table_name)
+print("Table transfere done.")
