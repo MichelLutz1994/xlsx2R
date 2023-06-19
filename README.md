@@ -1,6 +1,6 @@
-# xlsx
+# xlsx2sas
 Test implentation to import and write xlsx fils to sas e.g. from sas without using 
-SAS PC Access, but god old R
+SAS PC Access, but god old R. 
 
 ## Example
 See example.sas file
