@@ -10,8 +10,8 @@ Variables to set:
 ################################################################################;
 
 *global setup variables;
-%let path_to_R = "/usr/local/bin/Rscript";
-%let path_to_R_script = "/data/global/scripts/data/global/scripts/xlsx2sas/xlsx2sas.R";
+%let path_to_R = /usr/local/bin/Rscript;
+%let path_to_R_script = /data/global/scripts/data/global/scripts/xlsx2sas/xlsx2sas.R;
 
 * set wdir to root;
 data _null_;
@@ -19,8 +19,11 @@ data _null_;
 	put rc=;
 run;
 
+%let R_command =   "&path_to_R. &path_to_R_script. &file. &sheet. &table_name.";
+%put &R_command;
+
 data _null_;
-	call system('&path_to_R &path_to_R_script &file &sheet &table_name');
+	call system(&R_command.);
 run;
 
 *incredible complicated code to get simples things, thank you SAS... (get dir from file);
@@ -36,7 +39,7 @@ run;
 %put &prog;
 
 *execute sas script written by R;
-%include "&prog";
+%include "&prog.";
 
 *remove temp lib;
 proc datasets library=work;

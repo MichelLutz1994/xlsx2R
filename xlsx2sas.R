@@ -9,13 +9,11 @@ pacman::p_load(tidyverse, haven, openxlsx, foreign, readr, fs)
 # writes the file as data_temp.csv file and sas code to import the file in sas
 xlsx2sas <- function(file, sheet=NULL, table_name){
   
-  setwd(dirname(file))
-  
   #import xlsx file
-  if (is.null(sheet)){
+  if (is.null(sheet) || sheet == "NULL"){
     data <- read.xlsx(xlsxFile=file, sheet = 1)
   } else {
-    data <- read.xlsx(file=file, sheetName = sheet)
+    data <- read.xlsx(file=file, sheet = sheet)
   }
   
   print(paste("imported :", file, sep=""))
@@ -34,7 +32,7 @@ xlsx2sas <- function(file, sheet=NULL, table_name){
   #(ideally in or downstream of your R project directory)
   write.foreign(df = data ,
                 datafile = paste(dirname(file), 'data_temp.txt', sep="/"),
-                codefile = 'data_temp.sas',
+                codefile = paste(dirname(file), 'data_temp.sas', sep="/"),
                 dataname = table_name, # Destination in SAS to save the data
                 package = 'SAS')
   
@@ -50,19 +48,18 @@ xlsx2sas <- function(file, sheet=NULL, table_name){
 
 # parsing command line arguments
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) < 2 || length(args) > 3) {
-  stop("Provide 2 or 3 arguments. First path to .xlsx file. Second destination libname.tablename. 
-       Third sheet name, if none given the 1 sheet will be imported", call.=FALSE)
-} else if (length(args) >= 2){
+if (length(args) != 3) {
+  stop("Provide 3 arguments. First path to .xlsx file. Second destination libname.tablename. 
+       Third sheet name, or NULL for importing first sheet", call.=FALSE)
+} else {
   file <- args[1]
-  table_name <- args[2]
-  sheet <- NULL
-} else if (length(args) == 3){
-  sheet <- args[3]
+  sheet <- args[2]
+  table_name <- args[3]
 }
 
 print("Start table transfere...")
 xlsx2sas(file=file,
-         sheet=NULL,
+         sheet=sheet,
          table_name=table_name)
 print("Table transfere done.")
+

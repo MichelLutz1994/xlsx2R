@@ -10,8 +10,8 @@ Variables to set:
 ################################################################################;
 
 *global setup variables;
-%let path_to_R = "/usr/local/bin/Rscript";
-%let path_to_R_script = "/data/global/scripts/data/global/scripts/xlsx2sas/sas2xlsx.R";
+%let path_to_R = /usr/local/bin/Rscript;
+%let path_to_R_script = /data/global/scripts/data/global/scripts/xlsx2sas/sas2xlsx.R;
 
 *set working directory to root;
 data _null_;
@@ -43,8 +43,11 @@ data work.sas2xlsx_tmp;
 run;
 
 *2. call r to transform xpt to .xlsx;
+%let R_command = "&path_to_R. &path_to_R_script. &file.";
+%put &R_command;
+
 data _null_;
-	call system('&path_to_R &path_to_R_script &file');
+	call system(&R_command.);
 run;
 
 *reset working directory;
