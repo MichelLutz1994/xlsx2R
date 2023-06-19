@@ -1,16 +1,17 @@
 *###########################################################################################################
 xlsx2sas
+
+Author: Michel Lutz
+Date: 19/06/23
+
 Variables to set:
  table_name: 		libname.table - name of the lib to write
  file: str			direction of the xlsx file
-
 ################################################################################;
-%let table_name = work.ae; 
-%let file = "data/projects/sandbox/sandbox_1/05-Prog-Env/mlutz/ae.xlsx";
-*###############################################################################;
 
 *global setup variables;
-%let path_to_R = "C:\Program Files\R\R-4.2.2\bin\Rscript";
+%let path_to_R = "/usr/local/bin/Rscript";
+%let path_to_R_script = "/data/global/scripts/data/global/scripts/xlsx2sas/sas2xlsx.R";
 
 *set working directory to root;
 data _null_;
@@ -19,18 +20,32 @@ data _null_;
 run;
 
 *parse filen_name.xlsx to filen_name.xpt;
-*todo;
+*incredible complicated code to get simples things, thank you SAS... (get filen_name from string);
+data sas2xlsx_temp;
+	file_name = CATS(scan(&file, 1, '.'), '.xpt');
+run;
+%let file_name=;
+data _null_;
+  set sas2xlsx_temp;
+  call symputx('file_name',file_name);
+run;
+%put &file_name;
+
+*remove temp lib;
+proc datasets library=work;
+	delete  sas2xlsx_temp;
+run;
 
 *write table to xpt;
-libname work XPORT &file;
+libname work XPORT &file_name;
 data work.sas2xlsx_tmp;
 	set &table_name	;
 run;
 
 *2. call r to transform xpt to .xlsx;
-*data _null_;
-*	call system('&path_to_R sas2xlsx.R &file');
-*run;
+data _null_;
+	call system('&path_to_R &path_to_R_script &file');
+run;
 
 *reset working directory;
 data _null_;

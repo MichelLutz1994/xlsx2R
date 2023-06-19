@@ -1,6 +1,9 @@
 #!/usr/bin/env Rscript
+if (system.file(package = "pacman") == ""){
+  install.packages('pacman')
+}
 library(pacman)
-pacman::p_load(tidyverse, haven, xlsx, foreign, readr, fs)
+pacman::p_load(tidyverse, haven, openxlsx, foreign, readr, fs)
 
 # function reads xlsx file
 # writes the file as data_temp.csv file and sas code to import the file in sas
@@ -10,9 +13,9 @@ xlsx2sas <- function(file, sheet=NULL, table_name){
   
   #import xlsx file
   if (is.null(sheet)){
-    data <- read.xlsx2(file=file, sheetIndex = 1)
+    data <- read.xlsx(xlsxFile=file, sheet = 1)
   } else {
-    data <- read.xlsx2(file=file, sheetName = sheet)
+    data <- read.xlsx(file=file, sheetName = sheet)
   }
   
   print(paste("imported :", file, sep=""))

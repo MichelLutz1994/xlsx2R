@@ -1,18 +1,17 @@
-*###########################################################################################################
+*################################################################################
 xlsx2sas
+Author: Michel Lutz
+Date: 19/06/23
+
 Variables to set:
  file: str			path to the xlsx file
  sheet: str			xlsx worksheet name to import. Use "NULL" to choose first sheet.
  table_name: 		libname.table - name for the new libray
-
 ################################################################################;
-%let file = "data/projects/sandbox/sandbox_1/05-Prog-Env/mlutz/ae.xlsx";
-%let sheet = "NULL";
-%let table_name = work.ae; 
-*###############################################################################;
 
 *global setup variables;
-%let path_to_R = "C:\Program Files\R\R-4.2.2\bin\Rscript"
+%let path_to_R = "/usr/local/bin/Rscript";
+%let path_to_R_script = "/data/global/scripts/data/global/scripts/xlsx2sas/xlsx2sas.R";
 
 * set wdir to root;
 data _null_;
@@ -20,15 +19,14 @@ data _null_;
 	put rc=;
 run;
 
-*toDO: run r script to transform .xlsx to csv
-*data _null_;
-*	call system('&path_to_R xlsx2sas.R &file &sheet &table_name');
-*run;
+data _null_;
+	call system('&path_to_R &path_to_R_script &file &sheet &table_name');
+run;
 
 *incredible complicated code to get simples things, thank you SAS... (get dir from file);
 data xlsx2sas_temp;
-filename=&file;
-prog=CATS(substr(filename,1,find(filename,reverse(scan(reverse(filename),1,"/")))-1), "data_temp.sas");
+	filename=&file;
+	prog=CATS(substr(filename,1,find(filename,reverse(scan(reverse(filename),1,"/")))-1), "data_temp.sas");
 run;
 %let prog=;
 data _null_;
@@ -42,7 +40,7 @@ run;
 
 *remove temp lib;
 proc datasets library=work;
-delete  xlsx2sas_temp;
+	delete  xlsx2sas_temp;
 run;
 
 

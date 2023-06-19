@@ -1,4 +1,7 @@
 #!/usr/bin/env Rscript
+if (system.file(package = "pacman") == ""){
+  install.packages('pacman')
+}
 library(pacman)
 pacman::p_load(tidyverse, haven, xlsx, foreign, readr, fs)
 
@@ -13,8 +16,8 @@ sas2xlsx <- function(file){
 
 # parsing command line arguments
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 2) {
-  stop("Provide 2. First path to .xpt file. Second argument is the output file_name.", call.=FALSE)
+if (length(args) != 1) {
+  stop("Provide exactly 1. argument, which is the path to to xpt file", call.=FALSE)
 } else {
   file <- args[1]
   file_name <- args[2]
@@ -23,6 +26,4 @@ if (length(args) != 2) {
 print("Start table transfere...")
 sas2xlsx(file=file)
 print("Table transfere done.")
-
-sas2xlsx("X:/projects/sandbox/sandbox_1/05-Prog-Env/mlutz/test/ae.xlsx")
 
