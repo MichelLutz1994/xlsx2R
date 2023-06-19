@@ -30,14 +30,14 @@ copy files to: /data/global/xlsx2sas/
 ### Set up R with packages:
 1. install R on redhat
 2. install packages on RHLE
-   for tidyverse the following packages must install via rpm
-	2.1 sudo yum install openssl-devel
-	2.2 sudo yum install libxml2-devel 
-	2.3 sudo yum install libfontconfig-devel
-	2.4 sudo yum install fribidi-devel
-	2.5 sudo yum install harfbuzz-devel
-	2.6 sudo yum install libtiff-devel
-	2.7 sudo yum install libjpeg-turbo-devel
+	- for tidyverse the following packages must install via rpm
+		- sudo yum install openssl-devel
+		- sudo yum install libxml2-devel 
+		- sudo yum install libfontconfig-devel
+		- sudo yum install fribidi-devel
+		- sudo yum install harfbuzz-devel
+		- sudo yum install libtiff-devel
+		- sudo yum install libjpeg-turbo-devel
 		 
 3. open R sudo /usr/local/bin/R
 	run:
